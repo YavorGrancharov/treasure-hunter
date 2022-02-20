@@ -2,6 +2,7 @@ import * as PIXI from "pixi.js";
 
 import Globals from "./Globals";
 import KeyEvent from "./Events";
+import HealthBar from "./HealthBar";
 
 function GameScene() {
     this.container = new PIXI.Container();
@@ -31,6 +32,10 @@ GameScene.prototype.gameScene = function () {
     this.chest.x = this.container.width - this.chest.width - 48;
     this.chest.y = this.container.height / 2 - this.chest.height / 2;
     this.container.addChild(this.chest);
+
+    this.healthBar = new HealthBar();
+    this.healthBar.container.position.set(this.container.width - 160, 4);
+    this.container.addChild(this.healthBar.container);
 
     let numberOfBlobs = 6,
         spacing = 48,

@@ -1,12 +1,7 @@
 import * as PIXI from "pixi.js";
 
-import GameScene from "./GameScene";
-
 function HealthBar() {
-    this.scene = new GameScene();
     this.container = new PIXI.Container();
-    this.container.position.set(this.scene.container.width, 4);
-    this.container.outer = this.outerBar;
     this.innerBar();
     this.outerBar();
 }
