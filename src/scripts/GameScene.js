@@ -28,10 +28,10 @@ GameScene.prototype.gameScene = function () {
     this.door.position.set(32, 0);
     this.container.addChild(this.door);
 
-    this.chest = new PIXI.Sprite(this.extractSrc["treasure.png"]);
-    this.chest.x = this.container.width - this.chest.width - 48;
-    this.chest.y = this.container.height / 2 - this.chest.height / 2;
-    this.container.addChild(this.chest);
+    this.treasure = new PIXI.Sprite(this.extractSrc["treasure.png"]);
+    this.treasure.x = this.container.width - this.treasure.width - 48;
+    this.treasure.y = this.container.height / 2 - this.treasure.height / 2;
+    this.container.addChild(this.treasure);
 
     this.healthBar = new HealthBar();
     this.healthBar.container.position.set(this.container.width - 160, 4);

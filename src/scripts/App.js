@@ -31,9 +31,7 @@ App.prototype.run = function () {
 };
 
 App.prototype.start = function () {
-    this.currentBlob;
-    this.gameName = new PIXI.BitmapText("Treasure Hunter", { fontName: "Notalot60", tint: 0xffffff, fontSize: 48 });
-    this.app.stage.addChild(this.gameName);
+    this.hittedBlobs = [];
 
     this.gameScene = new GameScene();
     this.gameScene.container.scale.set(this.app.view.width / this.gameScene.container.width);
@@ -41,6 +39,7 @@ App.prototype.start = function () {
 
     this.gameOverScene = new GameOverScene();
     this.app.stage.addChild(this.gameOverScene.container);
+    this.app.stage.addChild(this.gameOverScene.message);
 
     this.state = this.play;
 
@@ -65,7 +64,7 @@ App.prototype.play = function () {
         }
 
         if (HitTestRectangle(this.gameScene.hero, blob)) {
-            this.currentBlob = blob;
+            this.hittedBlobs.push(blob);
             heroHit = true;
         }
     });
@@ -78,9 +77,9 @@ App.prototype.play = function () {
         this.gameScene.hero.alpha = 1;
     }
 
-    if (HitTestRectangle(this.gameScene.hero, this.gameScene.chest)) {
-        this.gameScene.chest.x = this.gameScene.hero.x + 8;
-        this.gameScene.chest.y = this.gameScene.hero.y + 8;
+    if (HitTestRectangle(this.gameScene.hero, this.gameScene.treasure)) {
+        this.gameScene.treasure.x = this.gameScene.hero.x + 8;
+        this.gameScene.treasure.y = this.gameScene.hero.y + 8;
     }
 
     if (this.gameScene.healthBar.outerBar.width < 0) {
@@ -88,7 +87,7 @@ App.prototype.play = function () {
         this.gameOverScene.message.text = "You Lost!";
     }
 
-    if (HitTestRectangle(this.gameScene.chest, this.gameScene.door)) {
+    if (HitTestRectangle(this.gameScene.treasure, this.gameScene.door)) {
         this.state = this.end;
         this.gameOverScene.message.text = "You Won!";
     }
@@ -100,17 +99,20 @@ App.prototype.end = function () {
     this.gameOverScene.message.y = this.app.view.height / 2 - this.gameOverScene.message.height / 2;
     this.gameScene.dungeon.alpha = 0.5;
     this.gameScene.hero.alpha = 0.5;
-    this.gameScene.chest.alpha = 0.5;
+    this.gameScene.treasure.alpha = 0.5;
+    this.gameScene.door.alpha = 0.5;
     this.gameScene.healthBar.container.alpha = 0.5;
-    if (this.currentBlob) {
-        this.currentBlob.alpha = 0.5;
-        this.gameOverScene.container.addChild(this.currentBlob);
+    if (this.hittedBlobs.length) {
+        this.hittedBlobs.map((blob) => {
+            blob.alpha = 0.5;
+            this.gameOverScene.container.addChild(blob);
+        });
     }
     this.gameOverScene.container.addChild(this.gameScene.healthBar.container);
     this.gameOverScene.container.addChild(this.gameScene.hero);
     this.gameOverScene.container.addChild(this.gameScene.dungeon);
     this.gameOverScene.container.addChild(this.gameScene.door);
-    this.gameOverScene.container.addChild(this.gameScene.chest);
+    this.gameOverScene.container.addChild(this.gameScene.treasure);
     this.gameOverScene.container.visible = true;
 };
 
