@@ -18,11 +18,14 @@ function App() {
         height: 512,
         antialias: true,
         resolution: 1,
+        clearBeforeRender: true,
     });
 
-    this.app.renderer.view.style.position = "absolute";
-    this.app.renderer.view.style.display = "block";
-    this.app.renderer.autoDensity = true;
+    const { renderer } = this.app;
+
+    renderer.view.style.position = "absolute";
+    renderer.view.style.display = "block";
+    renderer.autoDensity = true;
 }
 
 App.prototype.run = function () {
@@ -38,12 +41,10 @@ App.prototype.start = function () {
     this.pickedTreasure = false;
 
     this.mix = new Howl({ src: [Globals.resources.mix.url], volume: 0.1, sprite: { blobhit: [0, 900], loser: [1200, 3000], pickup: [4300, 3000], winner: [7900, 3500] } });
-
     this.bgmusic = new Howl({ src: [Globals.resources.bgmusic.url], volume: 0.1, autoplay: true, loop: true });
 
     this.message = new PIXI.BitmapText("", { fontName: "Notalot60", fontSize: 48 });
-
-    this.playAgain = new PIXI.BitmapText("Play Again?", { fontName: "Notalot60", fontSize: 28 });
+    this.playAgain = new PIXI.BitmapText("Play", { fontName: "Notalot60", fontSize: 28 });
 
     this.gameScene = new GameScene();
     this.gameScene.container.scale.set(this.app.view.width / this.gameScene.container.width);
@@ -122,9 +123,9 @@ App.prototype.end = function () {
     this.gameScene.container.visible = false;
     this.message.x = this.app.view.width / 2 - this.message.width / 2;
     this.message.y = this.app.view.height / 2 - this.message.height / 2;
-    this.border = new Border(0x0, this.playAgain.x - 10, this.playAgain.y - 10, this.playAgain.width + 20, this.playAgain.height + 20, this.replay, this);
     this.playAgain.x = this.app.view.width / 2 - this.playAgain.width / 2;
     this.playAgain.y = this.app.view.height / 2 - this.playAgain.height / 2 + 100;
+    this.border = new Border(0x0, this.playAgain.x - 10, this.playAgain.y - 10, this.playAgain.width + 20, this.playAgain.height + 20, this.restart, this);
     this.border.container.addChild(this.playAgain);
     this.gameScene.dungeon.alpha = 0.5;
     this.gameScene.hero.alpha = 0.5;
@@ -147,7 +148,7 @@ App.prototype.end = function () {
     this.gameOverScene.container.visible = true;
 };
 
-App.prototype.replay = function () {
+App.prototype.restart = function () {
     this.start();
 };
 
