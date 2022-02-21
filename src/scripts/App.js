@@ -149,6 +149,7 @@ App.prototype.end = function () {
 };
 
 App.prototype.restart = function () {
+    this.gameOverScene.container.removeChildren();
     this.start();
 };
 
