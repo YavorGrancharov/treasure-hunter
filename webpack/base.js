@@ -40,13 +40,7 @@ module.exports = {
             },
             {
                 test: /\.(woff|woff2|eot|ttf|otf)$/i,
-                use: {
-                    loader: "file-loader",
-                    options: {
-                        outputPath: "assets/fonts/",
-                        name: "[name][hash].[ext]",
-                    },
-                },
+                use: ['url-loader?limit=100000'],
             },
         ],
     },

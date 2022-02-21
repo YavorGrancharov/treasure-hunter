@@ -16,12 +16,14 @@
 		"babel-loader": "^8.0.6",
 		"clean-webpack-plugin": "^3.0.0",
 		"css-loader": "^6.6.0",
-		"file-loader": "^4.2.0",
+		"file-loader": "^4.3.0",
 		"html-webpack-plugin": "^3.2.0",
 		"prettier": "^2.5.1",
 		"raw-loader": "^3.1.0",
 		"style-loader": "^3.3.1",
 		"terser-webpack-plugin": "^2.2.1",
+		"ttf-loader": "^1.0.2",
+		"url-loader": "^4.1.1",
 		"webpack": "^4.41.2",
 		"webpack-cli": "^4.9.2",
 		"webpack-dev-server": "^4.7.4",
@@ -30,6 +32,7 @@
 	},
 	"dependencies": {
 		"@pixi/graphics-extras": "^6.2.2",
+		"@pixi/sound": "^4.2.0",
 		"howler": "^2.2.3",
 		"onchange": "^7.1.0",
 		"pixi.js": "^6.2.2"

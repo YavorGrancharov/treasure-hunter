@@ -1,4 +1,5 @@
 import * as PIXI from "pixi.js";
+import { Howl, Howler } from "howler";
 
 import Globals from "./Globals";
 import KeyEvent from "./Events";
@@ -11,6 +12,8 @@ function GameScene() {
 }
 
 GameScene.prototype.gameScene = function () {
+    this.mix = new Howl({ src: [Globals.resources.mix.url], volume: 0.5, sprite: { click: [1000, 200] } });
+
     this.extractSrc = Globals.resources["Field"].textures;
 
     this.dungeon = new PIXI.Sprite(this.extractSrc["dungeon.png"]);
@@ -69,6 +72,7 @@ GameScene.prototype.gameScene = function () {
     left.press = () => {
         this.hero.vx = -5;
         this.hero.vy = 0;
+        this.mix.play("click");
     };
 
     left.release = () => {
@@ -80,6 +84,7 @@ GameScene.prototype.gameScene = function () {
     up.press = () => {
         this.hero.vy = -5;
         this.hero.vx = 0;
+        this.mix.play("click");
     };
 
     up.release = () => {
@@ -91,6 +96,7 @@ GameScene.prototype.gameScene = function () {
     right.press = () => {
         this.hero.vx = 5;
         this.hero.vy = 0;
+        this.mix.play("click");
     };
 
     right.release = () => {
@@ -102,6 +108,7 @@ GameScene.prototype.gameScene = function () {
     down.press = () => {
         this.hero.vy = 5;
         this.hero.vx = 0;
+        this.mix.play("click");
     };
 
     down.release = () => {

@@ -1,11 +1,14 @@
 import * as PIXI from "pixi.js";
+import { Howl, Howler } from "howler";
 
 import Loader from "./Loader";
+import Globals from "./Globals";
 import GameScene from "./GameScene";
 import GameOverScene from "./GameOverScene";
 import Assets from "./Assets";
 import Contain from "./Contain";
 import HitTestRectangle from "./HitTestRectangle";
+import Border from "./Border";
 
 function App() {
     const ratio = window.innerWidth / window.innerHeight;
@@ -32,18 +35,30 @@ App.prototype.run = function () {
 
 App.prototype.start = function () {
     this.hittedBlobs = [];
+    this.pickedTreasure = false;
+
+    this.mix = new Howl({ src: [Globals.resources.mix.url], volume: 0.1, sprite: { blobhit: [0, 900], loser: [1200, 3000], pickup: [4300, 3000], winner: [7900, 3500] } });
+
+    this.bgmusic = new Howl({ src: [Globals.resources.bgmusic.url], volume: 0.1, autoplay: true, loop: true });
+
+    this.message = new PIXI.BitmapText("", { fontName: "Notalot60", fontSize: 48 });
+
+    this.playAgain = new PIXI.BitmapText("Play Again?", { fontName: "Notalot60", fontSize: 28 });
 
     this.gameScene = new GameScene();
     this.gameScene.container.scale.set(this.app.view.width / this.gameScene.container.width);
     this.app.stage.addChild(this.gameScene.container);
 
     this.gameOverScene = new GameOverScene();
+    this.gameOverScene.container.visible = false;
     this.app.stage.addChild(this.gameOverScene.container);
-    this.app.stage.addChild(this.gameOverScene.message);
 
     this.state = this.play;
 
-    this.app.ticker.add((dt) => this.gameLoop(dt));
+    this.bgmusic.once("load", () => {
+        this.bgmusic.play();
+        this.app.ticker.add((dt) => this.gameLoop(dt));
+    });
 };
 
 App.prototype.play = function () {
@@ -73,6 +88,8 @@ App.prototype.play = function () {
         this.gameScene.hero.alpha = 0.5;
 
         this.gameScene.healthBar.outerBar.width -= 1;
+
+        this.mix.play("blobhit");
     } else {
         this.gameScene.hero.alpha = 1;
     }
@@ -80,23 +97,35 @@ App.prototype.play = function () {
     if (HitTestRectangle(this.gameScene.hero, this.gameScene.treasure)) {
         this.gameScene.treasure.x = this.gameScene.hero.x + 8;
         this.gameScene.treasure.y = this.gameScene.hero.y + 8;
+        if (!this.pickedTreasure) {
+            this.pickedTreasure = true;
+            this.mix.play("pickup");
+        }
     }
 
     if (this.gameScene.healthBar.outerBar.width < 0) {
         this.state = this.end;
-        this.gameOverScene.message.text = "You Lost!";
+        this.message.text = "You Lost!";
+        this.bgmusic.stop();
+        this.mix.play("loser");
     }
 
     if (HitTestRectangle(this.gameScene.treasure, this.gameScene.door)) {
         this.state = this.end;
-        this.gameOverScene.message.text = "You Won!";
+        this.message.text = "You Won!";
+        this.bgmusic.stop();
+        this.mix.play("winner");
     }
 };
 
 App.prototype.end = function () {
     this.gameScene.container.visible = false;
-    this.gameOverScene.message.x = this.app.view.width / 2 - this.gameOverScene.message.width / 2;
-    this.gameOverScene.message.y = this.app.view.height / 2 - this.gameOverScene.message.height / 2;
+    this.message.x = this.app.view.width / 2 - this.message.width / 2;
+    this.message.y = this.app.view.height / 2 - this.message.height / 2;
+    this.border = new Border(0x0, this.playAgain.x - 10, this.playAgain.y - 10, this.playAgain.width + 20, this.playAgain.height + 20, this.replay, this);
+    this.playAgain.x = this.app.view.width / 2 - this.playAgain.width / 2;
+    this.playAgain.y = this.app.view.height / 2 - this.playAgain.height / 2 + 100;
+    this.border.container.addChild(this.playAgain);
     this.gameScene.dungeon.alpha = 0.5;
     this.gameScene.hero.alpha = 0.5;
     this.gameScene.treasure.alpha = 0.5;
@@ -113,7 +142,13 @@ App.prototype.end = function () {
     this.gameOverScene.container.addChild(this.gameScene.dungeon);
     this.gameOverScene.container.addChild(this.gameScene.door);
     this.gameOverScene.container.addChild(this.gameScene.treasure);
+    this.gameOverScene.container.addChild(this.message);
+    this.gameOverScene.container.addChild(this.border.container);
     this.gameOverScene.container.visible = true;
+};
+
+App.prototype.replay = function () {
+    this.start();
 };
 
 App.prototype.gameLoop = function (dt) {
