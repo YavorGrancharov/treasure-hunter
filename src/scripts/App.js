@@ -173,12 +173,12 @@ App.prototype.gameLoop = function (dt) {
 
 App.prototype.resize = function () {
     let w, h;
-    if (window.innerWidth / window.innerHeight > this.ratio) {
-        w = this.app.view.height * this.ratio;
-        h = this.app.view.height;
+    if (window.innerWidth / window.innerHeight >= this.ratio) {
+        w = window.innerHeight * this.ratio;
+        h = window.innerHeight;
     } else {
-        w = this.app.view.width;
-        h = this.app.view.width * this.ratio;
+        w = window.innerWidth;
+        h = window.innerWidth / this.ratio;
     }
 
     this.app.view.style.width = w + "px";

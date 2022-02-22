@@ -116,6 +116,22 @@ GameScene.prototype.gameScene = function () {
             this.hero.vy = 0;
         }
     };
+
+    const stage = document.getElementById("root");
+    stage.addEventListener("touchstart", (ev) => {
+        if (ev.touches[0].clientX > this.hero.x) {
+            this.hero.vx = 5;
+            this.hero.vy = 0;
+        }
+        if (ev.touches[0].clientX < this.hero.x) {
+            this.hero.vx = -5;
+            this.hero.vy = 0;
+        }
+    });
+    stage.addEventListener("touchend", () => {
+        this.hero.vx = 0;
+        this.hero.vy = 0;
+    });
 };
 
 GameScene.prototype.randomInt = function (min, max) {
