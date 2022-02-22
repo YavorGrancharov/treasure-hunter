@@ -8,10 +8,6 @@ module.exports = {
     mode: "development",
     devtool: "source-map",
     entry: "./src/scripts/index.js",
-    output: {
-        filename: "bundle.js",
-        path: path.resolve(__dirname, "dist"),
-    },
     devServer: {
         static: {
             directory: path.resolve("src"),

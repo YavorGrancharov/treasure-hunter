@@ -9,17 +9,20 @@ import Assets from "./Assets";
 import Contain from "./Contain";
 import HitTestRectangle from "./HitTestRectangle";
 import Border from "./Border";
+import KeyEvent from "./Events";
 
 function App() {
-    const ratio = window.innerWidth / window.innerHeight;
+    const size = [512, 512];
 
     this.app = new PIXI.Application({
-        width: 512,
-        height: 512,
+        width: size[0],
+        height: size[1],
         antialias: true,
         resolution: 1,
         clearBeforeRender: true,
     });
+
+    this.ratio = size[0] / size[1];
 
     const { renderer } = this.app;
 
@@ -37,11 +40,12 @@ App.prototype.run = function () {
 };
 
 App.prototype.start = function () {
+    window.onresize = this.resize();
     this.hittedBlobs = [];
     this.pickedTreasure = false;
 
-    this.mix = new Howl({ src: [Globals.resources.mix.url], volume: 0.1, sprite: { blobhit: [0, 900], loser: [1200, 3000], pickup: [4300, 3000], winner: [7900, 3500] } });
-    this.bgmusic = new Howl({ src: [Globals.resources.bgmusic.url], volume: 0.1, autoplay: true, loop: true });
+    this.mix = new Howl({ src: [Globals.resources.mix.url], volume: 0.5, sprite: { blobhit: [0, 900], loser: [1200, 3000], pickup: [4300, 3000], winner: [7900, 3500] } });
+    this.bgmusic = new Howl({ src: [Globals.resources.bgmusic.url], volume: 0.5, autoplay: true, loop: true });
 
     this.message = new PIXI.BitmapText("", { fontName: "Notalot60", fontSize: 48 });
     this.playAgain = new PIXI.BitmapText("Play", { fontName: "Notalot60", fontSize: 28 });
@@ -53,6 +57,15 @@ App.prototype.start = function () {
     this.gameOverScene = new GameOverScene();
     this.gameOverScene.container.visible = false;
     this.app.stage.addChild(this.gameOverScene.container);
+
+    const pause = KeyEvent(32);
+    let paused = false;
+
+    pause.press = () => {
+        paused = !paused;
+        if (paused) this.app.ticker.stop();
+        else this.app.ticker.start();
+    };
 
     this.state = this.play;
 
@@ -149,12 +162,27 @@ App.prototype.end = function () {
 };
 
 App.prototype.restart = function () {
+    this.gameScene.container.removeChildren();
     this.gameOverScene.container.removeChildren();
     this.start();
 };
 
 App.prototype.gameLoop = function (dt) {
     this.state(dt);
+};
+
+App.prototype.resize = function () {
+    let w, h;
+    if (window.innerWidth / window.innerHeight > this.ratio) {
+        w = this.app.view.height * this.ratio;
+        h = this.app.view.height;
+    } else {
+        w = this.app.view.width;
+        h = this.app.view.width * this.ratio;
+    }
+
+    this.app.view.style.width = w + "px";
+    this.app.view.style.height = h + "px";
 };
 
 export default App;
